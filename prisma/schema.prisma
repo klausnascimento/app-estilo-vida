@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  energyCheckIns EnergyCheckIn[]
+  priorities     DailyPriority[]
+  habits         Habit[]
+  finances       FinancialEntry[]
+  preference     UserPreference?
+}
+
+model DailyBibleVerse {
+  id        String   @id @default(uuid())
+  text      String
+  reference String
+  language  String   // PT_BR, EN, ES
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DailyMotivation {
+  id        String   @id @default(uuid())
+  text      String
+  language  String   // PT_BR, EN, ES
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EnergyCheckIn {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score       Int      // 0 to 10
+  reason      String?
+  notes       String?
+  checkInDate DateTime @default(now()) // Stored as date-only representation or start of day
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, checkInDate])
+  @@index([userId, checkInDate])
+}
+
+model DailyPriority {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  status       String   @default("PENDING") // PENDING, IN_PROGRESS, DONE
+  priorityDate DateTime @default(now()) // start of day date
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, priorityDate])
+  @@index([userId, priorityDate])
+}
+
+model Habit {
+  id          String     @id @default(uuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  active      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  logs        HabitLog[]
+  
+  @@index([userId])
+}
+
+model HabitLog {
+  id          String   @id @default(uuid())
+  habitId     String
+  habit       Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  weekDay     Int      // 0 = Sunday, 1 = Monday, etc.
+  completedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([habitId])
+  @@index([completedAt])
+}
+
+model FinancialEntry {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // INCOME, EXPENSE
+  title       String
+  description String?
+  amount      Float
+  category    String
+  entryDate   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([entryDate])
+}
+
+model UserPreference {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language  String   @default("PT_BR") // PT_BR, EN, ES
+  theme     String   @default("SYSTEM") // LIGHT, DARK, SYSTEM
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
