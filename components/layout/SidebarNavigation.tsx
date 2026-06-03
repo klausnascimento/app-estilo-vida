@@ -1,47 +1,126 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '../../providers/LanguageProvider';
+import { Language } from '../../types';
+
+const NAV_KEYS = [
+  { key: 'dashboard', href: '/' },
+  { key: 'energy',    href: '/energy' },
+  { key: 'priority',  href: '/priority' },
+  { key: 'habits',    href: '/habits' },
+  { key: 'finance',   href: '/finance' },
+] as const;
+
+function getLocale(lang: Language) {
+  if (lang === 'PT_BR') return 'pt-BR';
+  if (lang === 'ES') return 'es-ES';
+  return 'en-US';
+}
 
 export function SidebarNavigation() {
   const pathname = usePathname();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const [dateStr, setDateStr] = useState('');
 
-  const navItems = [
-    { label: t.dashboard, href: '/' },
-    { label: t.energy, href: '/energy' },
-    { label: t.priority, href: '/priority' },
-    { label: t.habits, href: '/habits' },
-    { label: t.finance, href: '/finance' },
-  ];
+  useEffect(() => {
+    const locale = getLocale(language);
+    const today = new Date();
+    setDateStr(
+      today.toLocaleDateString(locale, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      })
+    );
+  }, [language]);
+
+  const labels: Record<string, string> = {
+    dashboard: t.dashboard,
+    energy:    t.energy,
+    priority:  t.priority,
+    habits:    t.habits,
+    finance:   t.finance,
+  };
 
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden md:block">
-      <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
-        <div className="font-bold text-xl tracking-tight text-blue-600 dark:text-blue-400">
-          Estilo<span className="text-slate-800 dark:text-slate-200">Vida</span>
-        </div>
+    <aside
+      className="w-52 flex-shrink-0 flex flex-col h-full hidden md:flex border-r"
+      style={{
+        background: 'var(--bg-surface)',
+        borderColor: 'var(--line)',
+      }}
+    >
+      {/* Brand mark */}
+      <div className="px-7 pt-9 pb-7">
+        <p
+          className="text-[11px] tracking-[0.28em] mb-1 leading-none select-none"
+          style={{
+            fontFamily: 'var(--font-cormorant), Georgia, serif',
+            fontStyle: 'italic',
+            fontWeight: 300,
+            color: 'var(--ink-muted)',
+          }}
+        >
+          estilo
+        </p>
+        <p
+          className="text-[32px] leading-none select-none"
+          style={{
+            fontFamily: 'var(--font-cormorant), Georgia, serif',
+            fontWeight: 600,
+            color: 'var(--ink)',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          Vida
+        </p>
       </div>
-      <nav className="p-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
+
+      {/* Divider */}
+      <div className="mx-7 h-px" style={{ background: 'var(--line)' }} />
+
+      {/* Navigation */}
+      <nav className="flex-1 px-4 pt-5 pb-2 flex flex-col gap-0.5">
+        {NAV_KEYS.map(({ key, href }, index) => {
+          const isActive =
+            href === '/'
+              ? pathname === '/'
+              : pathname === href || pathname.startsWith(href + '/');
+
           return (
-            <Link 
-              key={item.href} 
-              href={item.href}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive 
-                  ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' 
-                  : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-              }`}
+            <Link
+              key={href}
+              href={href}
+              style={{
+                animation: 'nav-slide-in 0.38s cubic-bezier(0.22, 0.61, 0.36, 1) both',
+                animationDelay: `${index * 55 + 60}ms`,
+                color: isActive ? 'var(--ink)' : 'var(--ink-muted)',
+                background: isActive ? 'var(--amber-soft)' : 'transparent',
+                boxShadow: isActive ? 'inset 2px 0 0 var(--amber)' : 'none',
+              }}
+              className="block px-4 py-2.5 rounded-md text-sm transition-all duration-150 hover:opacity-80"
             >
-              {item.label}
+              <span style={{ fontWeight: isActive ? 500 : 400 }}>
+                {labels[key]}
+              </span>
             </Link>
           );
         })}
       </nav>
+
+      {/* Date footer */}
+      <div className="px-7 pb-7 pt-3">
+        <div className="h-px mb-4" style={{ background: 'var(--line)' }} />
+        <p
+          className="text-[10px] tracking-[0.14em] uppercase leading-relaxed"
+          style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-dm), sans-serif' }}
+        >
+          {dateStr}
+        </p>
+      </div>
     </aside>
   );
 }

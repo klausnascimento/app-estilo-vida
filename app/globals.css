@@ -1,70 +1,91 @@
 @import "tailwindcss";
 
+/* ─── Design tokens ─── */
 :root {
-  --background: #f4f1ea;
-  --surface: rgba(255, 255, 255, 0.76);
-  --surface-strong: rgba(255, 255, 255, 0.92);
-  --foreground: #1f2937;
-  --muted: #64748b;
-  --line: rgba(100, 116, 139, 0.18);
-  --brand: #1d4ed8;
-  --brand-soft: rgba(29, 78, 216, 0.12);
-  --success: #15803d;
-  --warning: #b45309;
-  --danger: #b91c1c;
-  --shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  --bg:           #F4EDE0;
+  --bg-surface:   #FAF7F0;
+  --bg-raised:    #FDFBF6;
+  --ink:          #1C1208;
+  --ink-muted:    #9A856E;
+  --line:         rgba(154, 133, 110, 0.18);
+  --amber:        #96612A;
+  --amber-hover:  #7D5022;
+  --amber-soft:   rgba(150, 97, 42, 0.09);
+  --success:      #3D6647;
+  --danger:       #8B3023;
+  --shadow-card:  0 1px 4px rgba(28, 18, 8, 0.06), 0 8px 24px rgba(28, 18, 8, 0.05);
+  --shadow-hover: 0 4px 12px rgba(28, 18, 8, 0.10), 0 16px 40px rgba(28, 18, 8, 0.07);
 }
 
 .dark {
-  --background: #0f172a;
-  --surface: rgba(15, 23, 42, 0.72);
-  --surface-strong: rgba(15, 23, 42, 0.88);
-  --foreground: #e2e8f0;
-  --muted: #94a3b8;
-  --line: rgba(148, 163, 184, 0.18);
-  --brand: #60a5fa;
-  --brand-soft: rgba(96, 165, 250, 0.18);
-  --success: #4ade80;
-  --warning: #f59e0b;
-  --danger: #f87171;
-  --shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+  --bg:           #0E0B07;
+  --bg-surface:   #161108;
+  --bg-raised:    #1E170E;
+  --ink:          #EAE0CA;
+  --ink-muted:    #8B7B66;
+  --line:         rgba(139, 123, 102, 0.18);
+  --amber:        #C8904A;
+  --amber-hover:  #DAA660;
+  --amber-soft:   rgba(200, 144, 74, 0.12);
+  --success:      #6BA07A;
+  --danger:       #C8614A;
+  --shadow-card:  0 1px 4px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
+/* ─── Tailwind token bridge ─── */
 @theme inline {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-surface-strong: var(--surface-strong);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-brand: var(--brand);
-  --color-brand-soft: var(--brand-soft);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
-  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --color-bg:          var(--bg);
+  --color-bg-surface:  var(--bg-surface);
+  --color-bg-raised:   var(--bg-raised);
+  --color-ink:         var(--ink);
+  --color-ink-muted:   var(--ink-muted);
+  --color-line:        var(--line);
+  --color-amber:       var(--amber);
+  --color-amber-soft:  var(--amber-soft);
+  --color-success:     var(--success);
+  --color-danger:      var(--danger);
+
+  /* keep previous brand tokens for features/ layer */
+  --color-brand:       var(--amber);
+  --color-brand-soft:  var(--amber-soft);
+  --color-foreground:  var(--ink);
+  --color-muted:       var(--ink-muted);
+  --color-surface:     var(--bg-surface);
+  --color-surface-strong: var(--bg-raised);
+  --color-background:  var(--bg);
+
+  --font-display: var(--font-cormorant), "Palatino Linotype", Georgia, serif;
+  --font-sans:    var(--font-dm), "Segoe UI", system-ui, sans-serif;
+  --font-serif:   var(--font-cormorant), "Palatino Linotype", Georgia, serif;
 }
 
-* {
+/* ─── Base ─── */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  color: var(--foreground);
-  background:
-    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 28%),
-    radial-gradient(circle at top right, rgba(217, 119, 6, 0.12), transparent 26%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 26%),
-    var(--background);
-  font-family: var(--font-manrope), sans-serif;
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-family: var(--font-dm), "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(150, 97, 42, 0.07), transparent),
+    radial-gradient(ellipse 60% 40% at 85% 5%, rgba(150, 97, 42, 0.05), transparent);
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(200, 144, 74, 0.05), transparent),
+    radial-gradient(ellipse 60% 40% at 85% 5%, rgba(200, 144, 74, 0.04), transparent);
 }
 
 a {
@@ -72,14 +93,48 @@ a {
   text-decoration: none;
 }
 
-button,
-input,
-select,
-textarea {
+button, input, select, textarea {
   font: inherit;
 }
 
 ::selection {
-  background: var(--brand);
-  color: white;
+  background: var(--amber);
+  color: #FAF7F0;
+}
+
+/* ─── Nav animation ─── */
+@keyframes nav-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ─── Card hover lift ─── */
+.card-liftable {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-liftable:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
 }
